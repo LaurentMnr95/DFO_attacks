@@ -51,8 +51,8 @@ def getNetwork(args):
         net = ResNet(args.depth, args.num_classes)
         file_name = 'resnet-'+str(args.depth)
     elif (args.net_type == 'wide-resnet'):
-        net = Wide_ResNet(args.depth, args.widen_factor, args.dropout, args.num_classes)
-        file_name = 'wide-resnet-'+str(args.depth)+'x'+str(args.widen_factor)
+        net = Wide_ResNet(args.depth, args.widen_factor, args.dropout, args.num_classes,sparsify_level=args.sparsify)
+        file_name = 'wide-resnet-'+str(args.depth)+'x'+str(args.widen_factor)+'_sparse_'+str(args.sparsify)
     else:
         print('Error : Network should be either [LeNet / VGGNet / ResNet / Wide_ResNet')
         sys.exit(0)
@@ -66,20 +66,20 @@ def load_data(opt,train_mode=True):
                     transforms.RandomCrop(32, padding=4),
                     transforms.RandomHorizontalFlip(),
                     transforms.ToTensor(),
-                    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+                    #transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
                 ])
         else:
             transform = transforms.Compose([
                     transforms.ToTensor(),
-                    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+                    #transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
                 ])
         loader = torch.utils.data.DataLoader(
             torchvision.datasets.CIFAR10(os.path.join(opt.datadir,opt.dataset), train=train_mode, download=True, transform=transform),
-                batch_size=opt.batch_size, shuffle=train_mode)
+                batch_size=opt.batch_size, shuffle=True)
         print("Loaded CIFAR 10 dataset")
     elif opt.dataset == "MNIST":
         loader = torch.utils.data.DataLoader(
             torchvision.datasets.MNIST(os.path.join(opt.datadir,opt.dataset), train=train_mode, download=True, transform=transform),
-                batch_size=opt.batch_size, shuffle=train_mode)
+                batch_size=opt.batch_size, shuffle=True)
         print("Loaded MNIST dataset")
     return loader
